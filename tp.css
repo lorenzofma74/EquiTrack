@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+.Error
+{
+	color: crimson;
+	font-weight: bold;
+	list-style: "⇒ ";
+	margin-top: 1rem;
+}

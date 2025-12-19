@@ -1,0 +1,63 @@
+PWA application équestre
+Nom : EquiTrack
+
+But :
+- Suivi d’entraînement
+- Gestion du cheval
+- Analyse des performances
+
+Fonctionnalités principales :
+
+1. Journal d’entraînement Ajouter une séance : discipline, durée, difficulté, ressenti => faire des barre de progression ex : dure = barre complete rouge, faclie barre verte incomplete. => Chart.js
+
+2. Fiche cheval complète Âge, race, taille, Historique véto, Rappels automatiques (vaccins, ferrures, vermifuge) Carnet alimentaire => créer sa propre API pour enregister le tout en local ou session storage.
+
+3. Suivi GPS Pour les balades, trottings, galops : Distance Allures Carte du trajet Vitesse max => Météo, carte, DISTANCE Vitesse
+
+4. Objectifs personnalisés, Préparer un galop, Préparer un concours, Améliorer une allure Barre d’évolution (Facultatif)
+
+5. Analyse des séances Graphiques de progression Temps par allure Fréquence des séances (Faire à la fin)
+
+6. Mode “coach” Conseils automatiques basés sur les séances Exemple : “Tu n’as pas travaillé le galop depuis 6 jours.”
+
+
+API :
+
+MÉTÉO
+Open-Meteo => Fonctionne
+
+
+CARTES + GPS
+Leaflet.js    =>Fonctionne
+
+
+NOTIFICATIONS
+Web Push API
+
+STATISTIQUES & GRAPHIQUES
+Chart.js
+
+DISTANCE Vitesse
+Distance, vitesse, allures : calcul côté JS
+
+Aucune API externe nécessaire :
+enregistres les points GPS (lat, lon, timestamp).
+
+calcules :
+distance entre deux points (formule de Haversine),
+vitesse = distance / temps,
+classes en fonction de seuils :
+Pas : < 7 km/h
+Trot : 7–15 km/h
+Galop : > 15 km/h
+
+
+WikiAPI (Wikipedia)
+OpenStats API
+
+➡️ Génération de stats à partir de tes données.
+
+
+38. Spotify API
+
+➡️ Playlist “Balade à cheval chill”.

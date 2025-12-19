@@ -1,0 +1,117 @@
+
+//Partie API map
+window.addEventListener("load", geoFindMe);
+
+const STATUS = document.getElementById("status");
+const MAP_LINK = document.getElementById("map-link");
+
+let latitude;
+let longitude;
+
+//Code du site officiel reformaté, permet de récupérer la geolocalisation de l'utilisateur.
+function geoFindMe() {
+  MAP_LINK.href = "";
+  MAP_LINK.textContent = "";
+  STATUS.textContent = "Localisation en cours...";
+
+  if (!navigator.geolocation) {
+    STATUS.textContent = "La géolocalisation n'est pas supportée par votre navigateur.";
+  } else {
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+}
+
+function success(position) {
+  latitude = position.coords.latitude;
+  longitude = position.coords.longitude;
+
+  STATUS.textContent = "";
+  MAP_LINK.textContent = "Latitude : " + latitude + " °, Longitude : " + longitude + " °";
+
+  displayMap(latitude, longitude);
+  get_weather(latitude, longitude);
+}
+
+function error() {
+  STATUS.textContent = "Impossible de récupérer votre localisation.";
+}
+
+//utilise la localisation de l'utilisateur afin de centrer l'affichage de la carte sur lui.
+function displayMap(lat, lon) {
+  document.getElementById("map").innerHTML = "";
+
+  let map = L.map("map").setView([lat, lon], 13); //Centre la carte
+
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  L.marker([lat, lon]).addTo(map).bindPopup("Tu es ici").openPopup(); //met un icon sur la localisation
+}
+
+
+
+
+
+
+//Partie API meteo------------------------------------------------------------------------------------------------------------------------------------------------------------v
+
+
+function get_weather(lat, lon) {
+    let weather_temp_element = document.getElementById("temperature");
+    let weather_rain_element = document.getElementById("rain");
+    let day_forecast_element = document.getElementById("day-forecast");
+
+
+    const WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
+        + "?latitude=" + lat
+        + "&longitude=" + lon
+        + "&hourly=temperature_2m,precipitation_probability,precipitation"
+        + "&forecast_days=1";
+
+    fetch(WEATHER_URL)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            // --- Météo actuelle (on prend la 1ère valeur horaire) ---
+            let temperature = data.hourly.temperature_2m[0];
+            let rainprob = data.hourly.precipitation_probability[0];
+
+            weather_temp_element.innerHTML =
+                "Température actuelle : <strong>" + temperature + "°C</strong>";
+
+            weather_rain_element.innerHTML =
+                "Risque de pluie maintenant : <strong>" + rainprob + "%</strong>";
+
+            // --- Prévision sur la journée (min/max + pluie max) ---
+            let temps = data.hourly.temperature_2m;
+            let rains = data.hourly.precipitation_probability;
+
+            let temp_min = temps[0];
+            let temp_max = temps[0];
+            let rain_max = rains[0];
+
+            for (let i = 1; i < temps.length; i++) {
+                if (temps[i] < temp_min) {
+                    temp_min = temps[i];
+                }
+                if (temps[i] > temp_max) {
+                    temp_max = temps[i];
+                }
+                if (rains[i] > rain_max) {
+                    rain_max = rains[i];
+                }
+            }
+
+            day_forecast_element.innerHTML =
+                "Aujourd'hui : entre <strong>" + temp_min + "°C</strong> et <strong>"
+                + temp_max + "°C</strong>, risque de pluie <strong>"
+                + rain_max + "%</strong>.";
+        })
+        .catch(function (error) {
+            console.error("Erreur météo :", error);
+        });
+}
+

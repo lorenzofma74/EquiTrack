@@ -1,0 +1,80 @@
+/* --- GESTION DES BOUTONS PWA --- */
+/* Si le bouton a l'attribut 'disabled', on le cache complètement */
+button:disabled {
+    display: none !important;
+}
+/* On garde un reset minimal */
+body {
+  margin: 0;
+  padding: 0;
+  /* w3-light-grey fait le reste pour le fond */
+}
+
+/* --- OBLIGATOIRE POUR LA CARTE --- */
+/* Leaflet a besoin d'une hauteur explicite pour s'afficher */
+#map {
+  height: 400px;
+  width: 100%;
+  background: #eee; /* Gris pendant le chargement */
+  z-index: 1; /* Pour rester sous le header MDL */
+}
+
+/* --- CLASSE UTILITAIRE POUR L'ALERTE JS --- */
+/* Utilisée par ton JS lors d'une chute pour faire clignoter l'écran */
+.alerte {
+    background-color: #d32f2f !important; /* Rouge MDL */
+}
+
+/* Ajustement mobile pour la map */
+@media (max-width: 600px) {
+    #map {
+        height: 250px;
+    }
+}
+/* Style pour le Calendrier */
+    .calendar-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #757575;
+    }
+    .calendar-body {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+    }
+    .calendar-day {
+        height: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        cursor: pointer;
+        position: relative;
+    }
+    .calendar-day:hover {
+        background-color: #f5f5f5;
+    }
+    /* Jour vide (padding début de mois) */
+    .calendar-day.empty {
+        border: none;
+        cursor: default;
+    }
+    .calendar-day.today {
+        background-color: #e8eaf6; /* Indigo très clair */
+        font-weight: bold;
+        color: #3f51b5;
+        border: 1px solid #3f51b5;
+    }
+    /* Pastille si événement */
+    .event-dot {
+        width: 6px;
+        height: 6px;
+        background-color: #ff4081; /* Rose accent */
+        border-radius: 50%;
+        margin-top: 2px;
+    }
