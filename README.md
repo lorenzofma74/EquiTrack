@@ -1,16 +1,5 @@
----
-# yaml-language-server: $schema=schemas/page.schema.json
-Object type:
-    - Page
-Backlinks:
-    - PWA
-Creation date: "2025-12-29T09:30:51Z"
-Created by:
-    - Lorenzo flammia
-id: bafyreieml55pvz7x5kstabpy6364dujq7fuyhsfeatmjfly32sxxq3quzm
----
 # README.md   
-# Dossier Technique : EquiTrack v3.0   
+# Dossier Technique : EquiTrack   
 Ce document est la référence unique pour la compréhension, la maintenance et l'évolution de la PWA **EquiTrack**. Il détaille l'architecture logicielle, les flux de données et les protocoles de sécurité.   
 ## 1. Vision Globale (Big Picture)   
 **EquiTrack** est une solution logicielle de type **Progressive Web App (PWA)** conçue pour accompagner les cavaliers propriétaires. L'objectif est de transformer un smartphone en un assistant de sécurité et de santé capable de fonctionner de manière optimale même en zone blanche (sans réseau), une situation fréquente lors de balades en extérieur.   
@@ -249,5 +238,5 @@ L'application exploite des API précises pour répondre aux contraintes du terra
     - **Raison :** Contrairement à d'autres API météo qui demandent une inscription, celle-ci respecte la vie privée et est extrêmement rapide. Elle fournit les données de précipitations heure par heure, ce qui est vital pour décider de sortir ou de rentrer au box.   
    
    
-*Document produit pour le projet EquiTrack v3.0 - Décembre 2025*   
+*Document produit pour le projet EquiTrack - Décembre 2025*   
    
