@@ -193,6 +193,9 @@ function preparerEvenementsPourCalendrier() {
 
 ```
 ## 6. Maintenance et Déploiement   
+### 6.1 Lancer l'API node 
+1. Aller dnas le fichier du projet 
+2. Executer `node server.js`
 ### 6.1 Mise à jour de l'application (Lifecycle)   
 Le cache est lié à la version déclarée dans le Service Worker. Pour déployer une modification :   
 1. Modifier les fichiers sources (JS, CSS ou HTML).   
@@ -224,7 +227,7 @@ Pour ajouter une nouvelle page (ex: "Carnet de santé") :
 4. Incrémenter la version du cache pour forcer le déploiement.   
    
    
-## 7. Justification des API Spécifiques (Natives et Externes)   
+## 8. Justification des API Spécifiques (Natives et Externes)   
 L'application exploite des API précises pour répondre aux contraintes du terrain (mobilité, sécurité, mode hors ligne).   
 - **Geolocation API (Native) :**   
     - **Raison :** C'est l'API la plus précise pour le suivi en temps réel. L'utilisation de `watchPosition` plutôt que `getCurrentPosition` permet d'avoir un flux de données continu, indispensable pour recentrer la carte automatiquement pendant que le cavalier se déplace.   
