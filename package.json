@@ -1,0 +1,26 @@
+{
+  "name": "equitrack",
+  "version": "1.0.0",
+  "description": "Ce document est la référence unique pour la compréhension, la maintenance et l'évolution de la PWA **EquiTrack**. Il détaille l'architecture logicielle, les flux de données et les protocoles de sécurité.    ## 1. Vision Globale (Big Picture)    **EquiTrack** est une solution logicielle de type **Progressive Web App (PWA)** conçue pour accompagner les cavaliers propriétaires. L'objectif est de transformer un smartphone en un assistant de sécurité et de santé capable de fonctionner de manière optimale même en zone blanche (sans réseau), une situation fréquente lors de balades en extérieur.    ### 1.2 PWA vs Application Native (Android/iOS)    **Choix :** Progressive Web App.    **Pourquoi ?**      - **Multi-plateforme :** Un seul code fonctionne sur Android et PC sans avoir à redévelopper l'interface pour chaque système.      - **Mises à jour fluides :** Dès que le développeur modifie le `service\\_worker.js`, l'utilisateur reçoit la mise à jour sans avoir à télécharger une nouvelle version lui même sur le web.    ## Objectifs clefs :    - **Sécurisation du cavalier** : Détection automatique de chute et procédure d'alerte SMS géolocalisée.    - **Suivi en temps réel** : Navigation GPS et affichage cartographique dynamique (Leaflet).    - **Gestion de santé** : Suivi des soins et planification via un agenda intégré (FullCalendar).    - **Résilience** : Architecture \"Offline-first\" garantissant l'accès aux données sans connexion internet.",
+  "main": "service_worker.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lorenzofma74/EquiTrack.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lorenzofma74/EquiTrack/issues"
+  },
+  "homepage": "https://github.com/lorenzofma74/EquiTrack#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
