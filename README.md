@@ -13,7 +13,7 @@ Ce document est la référence unique pour la compréhension, la maintenance et 
 - **Suivi en temps réel** : Navigation GPS et affichage cartographique dynamique (Leaflet).   
 - **Gestion de santé** : Suivi des soins et planification via un agenda intégré (FullCalendar).   
 - **Résilience** : Architecture "Offline-first" garantissant l'accès aux données sans connexion internet.   
-   
+
 ## 2. Architecture et Environnement   
 L'application repose sur une architecture **Client-Side** intégrale (Front-end uniquement), garantissant une confidentialité totale : aucune donnée sensible (GPS, contacts) ne quitte le téléphone.   
 ### 2.1 Stack Technique   
@@ -21,8 +21,10 @@ L'application repose sur une architecture **Client-Side** intégrale (Front-end 
 - **Logique métier** : *Vanilla JavaScript* (ES5/ES6) sans fonctions fléchées pour une compatibilité maximale.   
 - **Cartographie** : Bibliothèque *Leaflet* + tuiles *OpenStreetMap*.   
 - **Composants externes** : *FullCalendar API* (Agenda) et *Open-Meteo API* (Prévisions).   
-- **Hébergement** : Serveur IUT `srv-peda2` .   
-   
+- **Hébergement** : Serveur IUT `srv-peda2` .  
+- **Backend (API)** : *Node.js* avec *Express* pour servir les données JSON.
+- **Hébergement API** : *Render* (Cloud) pour rendre les données accessibles partout.
+
 ### 2.2 Structure du Projet (Arborescence)   
 ```
 /EquiTrack
@@ -97,7 +99,7 @@ Dans `app.js`, la géolocalisation est gérée par une instance unique pour opti
 - **Méthode** : `navigator.geolocation.watchPosition`.   
 - **Variables Globales** : `latitude` et `longitude` sont mises à jour en continu. Elles alimentent simultanément la carte Leaflet (déplacement du marqueur) et le module SOS (préparation du lien Maps).   
 - **Optimisation** : En cas de perte de signal, le système bascule sur la clé `lastKnownLocation` du LocalStorage pour maintenir l'affichage.   
-   
+
 ```
 function initGeolocation() {
     if (!navigator.geolocation) {
@@ -138,7 +140,7 @@ Ce module utilise l'accéléromètre via l'API `DeviceMotionEvent`.
 - **Calcul de Force** : Le système calcule la norme du vecteur accélération totale $G$ :   
     $G = \sqrt{x^2 + y^2 + z^2}$   
 - **Seuil** : La détection se déclenche si $G > 50$. Ce paramètre ( `SEUIL\_CHUTE`) est ajustable dans `app.js`.   
-   
+
 ```
 /* Extrait de la logique dans app.js */
 function analyserDonneesAccelerometre(event) {
@@ -161,8 +163,32 @@ function analyserDonneesAccelerometre(event) {
 ### 4.3 Résilience Réseau (Mode Offline)   
 - **Météo** : En cas d'échec de l'API (absence de réseau), `meteo\_detail.js` bascule sur `meteoCacheDetail`.    
 - **Service Worker** : Les ressources critiques (JS/CSS/Images) sont installées dès la première visite.   
-   
-   
+
+### 4.4 Bibliothèque d'Exercices (API REST)
+Ce module connecte l'application à une API distante pour récupérer des idées d'exercices équestres.
+- **Flux de données** : L'application effectue une requête `fetch` vers l'API hébergée sur Render.
+- **Logique Aléatoire** : Pour varier le contenu, la liste reçue est mélangée via l'algorithme de *Fisher-Yates* côté client, et seuls 3 exercices sont affichés.
+- **Gestion d'erreur** : Si le serveur est endormi (Free Tier Render) ou inaccessible, un message d'erreur clair informe l'utilisateur.
+
+```javascript
+/* Extrait de la logique dans app.js */
+function chargerExercices() {
+    fetch(URL_API)
+        .then(function (reponse) { return reponse.json(); })
+        .then(function (donnees) {
+            /* Mélange de Fisher-Yates */
+            for (let i = donnees.length - 1; i > 0; i--) {
+                const J = Math.floor(Math.random() * (i + 1));
+                const TEMP = donnees[i];
+                donnees[i] = donnees[J];
+                donnees[J] = TEMP;
+            }
+            /* Affichage des 3 premiers résultats */
+            let selection = donnees.slice(0, 3);
+            // ... (Code d'affichage DOM)
+        });
+}
+```
 ## 5. Gestion de l'Agenda et Profil    
 Ce module convertit le `localStorage` en objets visuels pour l'API **FullCalendar **.dans le fichie*r *`formul\_cheval.js`.   
 ### 5.1 Synchronisation des Données   
@@ -193,17 +219,26 @@ function preparerEvenementsPourCalendrier() {
 
 ```
 ## 6. Maintenance et Déploiement   
-### 6.1 Lancer l'API node 
-1. Aller dnas le fichier du projet 
-2. Executer `node server.js`
-### 6.1 Mise à jour de l'application (Lifecycle)   
+### 6.1 Gestion et Déploiement de l'API
+L'API est séparée du code Frontend. Elle possède son propre dépôt GitHub et est hébergée sur **Render**.
+
+**En Local (Développement) :**
+1. Ouvrir le dossier `api-equitrack`.
+2. Lancer la commande : `node server.js`.
+3. Le serveur écoute sur `http://localhost:3000`.
+
+**En Production (Cloud) :**
+- Le déploiement est automatique : chaque "push" sur la branche `main` du dépôt API déclenche un nouveau build sur Render.
+- **Attention au JSON** : Le fichier `exercices.json` est strict. Toute erreur de virgule (notamment à la fin d'une liste) empêchera le serveur de démarrer (Erreur 500).
+- **Note sur l'hébergement gratuit** : Le serveur se met en veille après 15 min d'inactivité. Le premier chargement peut prendre jusqu'à 60 secondes (Cold Start).
+### 6.2 Mise à jour de l'application (Lifecycle)   
 Le cache est lié à la version déclarée dans le Service Worker. Pour déployer une modification :   
 1. Modifier les fichiers sources (JS, CSS ou HTML).   
 2. Ouvrir `service\_worker.js`.   
 3. Incrémenter la valeur de `const VERSION = "3.0";` (ex: passer à `"3.1"`).   
 4. Le navigateur détectera le changement et proposera la mise à jour via le bouton géré par `pwa.js`.   
-   
-### 6.2 Guide de Dépannage   
+
+### 6.3Guide de Dépannage   
 |               Problème |                                     Cause probable |                                                    Solution |
 |:-----------------------|:---------------------------------------------------|:------------------------------------------------------------|
 | **Bouton SOS inactif** |                Capteurs bloqués par le navigateur. |          Cliquer sur "ACTIVER" et accepter les permissions. |
@@ -218,15 +253,15 @@ Pour garantir la compatibilité et la lisibilité, respecte impérativement ces 
 - **Variables** : Toujours en minuscules (ex: `let mavariable`).   
 - **Fonctions** : Utiliser uniquement des fonctions nommées classiques ( `function nom() {}`).   
 - **Interdiction** : L'usage des fonctions fléchées ( `=>`) est proscrit pour assurer les bonnes méthodes de programmations.   
-   
+
 ### 7.2 Ajouter une fonctionnalité   
 Pour ajouter une nouvelle page (ex: "Carnet de santé") :   
 1. Créer le fichier HTML avec les classes MDL pour la cohérence visuelle.   
 2. Ajouter l'URL au tableau `RESSOURCES` dans `service\_worker.js`.   
 3. Créer un script dédié dans `/js/` et utiliser le `localStorage` pour la persistance.   
 4. Incrémenter la version du cache pour forcer le déploiement.   
-   
-   
+
+
 ## 8. Justification des API Spécifiques (Natives et Externes)   
 L'application exploite des API précises pour répondre aux contraintes du terrain (mobilité, sécurité, mode hors ligne).   
 - **Geolocation API (Native) :**   
@@ -239,7 +274,7 @@ L'application exploite des API précises pour répondre aux contraintes du terra
     - **Raison :** Ces API permettent d'intercepter les requêtes réseau. C'est ce qui rend l'application "résiliente" : elle continue de fonctionner en forêt sans aucune barre de réseau, car tous les scripts et styles sont servis localement.   
 - **Open-Meteo API (Externe) :**   
     - **Raison :** Contrairement à d'autres API météo qui demandent une inscription, celle-ci respecte la vie privée et est extrêmement rapide. Elle fournit les données de précipitations heure par heure, ce qui est vital pour décider de sortir ou de rentrer au box.   
-   
-   
+- **API Personnalisée (Node/Express) :**
+     - **Raison :** Permet de séparer la logique des données de l'interface utilisateur. Cela offre la possibilité de mettre à jour la liste des exercices (fichier JSON côté serveur) sans avoir à redéployer toute l'application PWA ni à vider le cache des utilisateurs.
+
 *Document produit pour le projet EquiTrack - Décembre 2025*   
-   

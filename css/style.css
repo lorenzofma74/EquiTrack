@@ -1,33 +1,28 @@
 /* --- GESTION DES BOUTONS PWA --- */
 /* Si le bouton a l'attribut 'disabled', on le cache complètement */
 button:disabled {
-    display: none !important;
+    display: none !important; 
 }
-/* On garde un reset minimal */
 body {
   margin: 0;
   padding: 0;
-  /* w3-light-grey fait le reste pour le fond */
 }
 
-/* --- OBLIGATOIRE POUR LA CARTE --- */
-/* Leaflet a besoin d'une hauteur explicite pour s'afficher */
 #map {
   height: 400px;
-  width: 100%;
+  width: 100%; 
   background: #eee; /* Gris pendant le chargement */
-  z-index: 1; /* Pour rester sous le header MDL */
+  z-index: 1; /* Assure que la carte est en arrière-plan */ 
 }
 
 /* --- CLASSE UTILITAIRE POUR L'ALERTE JS --- */
-/* Utilisée par ton JS lors d'une chute pour faire clignoter l'écran */
 .alerte {
-    background-color: #d32f2f !important; /* Rouge MDL */
-}
+    background-color: #d32f2f !important;
 
+}
 /* Ajustement mobile pour la map */
-@media (max-width: 600px) {
-    #map {
+@media (max-width: 600px) { 
+    #map { 
         height: 250px;
     }
 }
@@ -59,22 +54,20 @@ body {
     .calendar-day:hover {
         background-color: #f5f5f5;
     }
-    /* Jour vide (padding début de mois) */
     .calendar-day.empty {
         border: none;
         cursor: default;
     }
     .calendar-day.today {
-        background-color: #e8eaf6; /* Indigo très clair */
+        background-color: #e8eaf6;
         font-weight: bold;
         color: #3f51b5;
         border: 1px solid #3f51b5;
     }
-    /* Pastille si événement */
     .event-dot {
         width: 6px;
         height: 6px;
-        background-color: #ff4081; /* Rose accent */
+        background-color: #ff4081; 
         border-radius: 50%;
         margin-top: 2px;
     }

@@ -1,127 +1,151 @@
 /******************************************************************************/
-/* Constants                                                                  */
+/* script: service_worker.js */
 /******************************************************************************/
 
-// On change la version pour forcer la mise à jour du cache
-const VERSION = "3.0"; 
+/* --- CONFIGURATION GLOBALE --- */
+// Incrémentez cette variable pour forcer la mise à jour du cache sur les téléphones
+const VERSION_CACHE = "version_4.4_android";
 
-const RESSOURCES = [
-    // --- Fichiers Locaux ---
-	"./",
-	"./index.html",
-	"./formul_cheval.html", // N'oublie pas de cacher les autres pages HTML aussi !
-	"./meteo.html",
-	"./service_worker.js",
-
-	"./css/style.css",
-
-    // Images & Favicons
-	"./favicon/apple-touch-icon.png",
-	"./favicon/favicon.ico",
-	"./favicon/favicon.svg",
-	"./favicon/favicon-96x96.png",
-	"./favicon/site.webmanifest",
-	"./favicon/web-app-manifest-192x192.png",
-	"./favicon/web-app-manifest-512x512.png",
-
-    // Scripts locaux
-	"./js/pwa.js",
+// Liste des fichiers nécessaires au fonctionnement hors ligne
+const LISTE_FICHIERS_CACHE = [
+    "./",
+    "./index.html",
+    "./formul_cheval.html",
+    "./meteo.html",
+    "./js/pwa.js",
     "./js/app.js",
-    "./js/formul_cheval.js",
-    "./js/meteo_detail.js",
-    "./son/cheval.mp3",
-
-    // --- Bibliothèques Externes (CDN) ---
-    // Il est crucial de les cacher pour que le design fonctionne hors ligne
-    "https://code.getmdl.io/1.3.0/material.teal-amber.min.css",
-    "https://code.getmdl.io/1.3.0/material.min.js",
-    "https://fonts.googleapis.com/icon?family=Material+Icons",
-    "https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Roboto:wght@300;400;500&display=swap",
-    
-    // Leaflet (Carte)
-    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
-    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
-    
-    // FullCalendar (Agenda)
-    "https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"
+    "./css/style.css"
 ];
 
-/******************************************************************************/
-/* Listeners                                                                  */
-/******************************************************************************/
+/* --- ECOUTEURS D'EVENEMENTS --- */
 
-self.addEventListener("install", onInstall);
-self.addEventListener("fetch", onFetch);
+// Installation : Mise en cache initiale
+self.addEventListener("install", surInstallation);
 
-/******************************************************************************/
-/* Install                                                                    */
-/******************************************************************************/
+// Activation : Nettoyage des anciens caches
+self.addEventListener("activate", surActivation);
 
-function onInstall(event)
-{
-	console.debug("onInstall()");
+// Fetch : Interception des requêtes réseau
+self.addEventListener("fetch", surRequete);
 
-	event.waitUntil(caching());
-	// Force le nouveau service worker à prendre le contrôle immédiatement
-	self.skipWaiting(); 
+/* --- FONCTIONS D'INSTALLATION --- */
+
+// Fonction synchrone
+// Raison : C'est le point d'entrée de l'événement, elle délègue le travail asynchrone à 'effectuerMiseEnCache' via waitUntil
+function surInstallation(evenement) {
+    console.log("[ServiceWorker] Événement 'install' déclenché.");
+    console.log("[ServiceWorker] Version actuelle : " + VERSION_CACHE);
+
+    // Force le Service Worker à s'activer sans attendre
+    self.skipWaiting();
+
+    // On attend que la mise en cache soit terminée
+    evenement.waitUntil(effectuerMiseEnCache());
 }
 
-/******************************************************************************/
+// Fonction asynchrone
+// Raison : L'ouverture du cache et l'ajout des fichiers (addAll) sont des opérations qui prennent du temps (Promesses)
+async function effectuerMiseEnCache() {
+    console.log("[ServiceWorker] Ouverture du cache...");
+    
+    try {
+        // Utilisation de 'let' (pas de const locale)
+        let espaceCache = await caches.open(VERSION_CACHE);
+        
+        console.log("[ServiceWorker] Ajout des fichiers au cache :", LISTE_FICHIERS_CACHE);
+        await espaceCache.addAll(LISTE_FICHIERS_CACHE);
+        
+        console.log("[ServiceWorker] Mise en cache terminée avec succès.");
 
-async function caching()
-{
-	console.debug("caching()");
-
-	const KEYS = await caches.keys();
-
-	// Si la version a changé, on nettoie tout
-	if( ! KEYS.includes(VERSION))
-	{
-		console.log("Caching version:", VERSION);
-		const CACHE = await caches.open(VERSION);
-		
-		// addAll va télécharger toutes les ressources listées (locales et CDN)
-		await CACHE.addAll(RESSOURCES);
-
-		for(const KEY of KEYS)
-		{
-			if(KEY !== VERSION)
-			{
-				console.log("Suppress old cache version:", KEY);
-				await caches.delete(KEY);
-			}
-		}
-	}
+    } catch (erreur) {
+        console.error("[ServiceWorker] Erreur pendant la mise en cache :", erreur);
+    }
 }
 
-/******************************************************************************/
-/* Fetch                                                                      */
-/******************************************************************************/
+/* --- FONCTIONS D'ACTIVATION --- */
 
-function onFetch(event)
-{
-	// console.debug("onFetch()", event.request.url); 
-    // Commenté pour ne pas spammer la console avec chaque tuile de map
+// Fonction synchrone
+// Raison : Point d'entrée de l'événement, délègue à 'nettoyerVieuxCaches'
+function surActivation(evenement) {
+    console.log("[ServiceWorker] Événement 'activate' déclenché.");
 
-	event.respondWith(getResponse(event.request));
+    // Permet au SW de contrôler les pages immédiatement
+    evenement.waitUntil(clients.claim());
+
+    // Nettoyage des versions précédentes
+    evenement.waitUntil(nettoyerVieuxCaches());
 }
 
-/******************************************************************************/
+// Fonction asynchrone
+// Raison : La lecture des clés de cache et leur suppression (delete) sont asynchrones
+async function nettoyerVieuxCaches() {
+    console.log("[ServiceWorker] Vérification des anciens caches...");
 
-async function getResponse(request)
-{
-	const RESPONSE = await caches.match(request);
+    try {
+        let listeCles = await caches.keys();
+        
+        // Boucle 'for' classique (pas de forEach, pas de map, pas de fonction fléchée)
+        for (let i = 0; i < listeCles.length; i++) {
+            let cleActuelle = listeCles[i];
 
-	if(RESPONSE)
-	{
-		// Si c'est dans le cache (fichiers locaux ou CDN sauvegardés), on le rend direct
-		// C'est le principe "Cache First"
-		return RESPONSE;
-	}
-	else
-	{
-		// Sinon (API météo, tuiles de la carte OpenStreetMap...), on tente internet
-		// Si internet échoue, le JS de tes pages (app.js) gère déjà le fallback localStorage
-		return fetch(request);
-	}
+            if (cleActuelle !== VERSION_CACHE) {
+                console.log("[ServiceWorker] Suppression du vieux cache détecté : " + cleActuelle);
+                await caches.delete(cleActuelle);
+            }
+        }
+        
+        console.log("[ServiceWorker] Nettoyage terminé. Cache actif : " + VERSION_CACHE);
+
+    } catch (erreur) {
+        console.error("[ServiceWorker] Erreur lors du nettoyage du cache :", erreur);
+    }
+}
+
+/* --- FONCTIONS DE GESTION RESEAU (FETCH) --- */
+
+// Fonction synchrone
+// Raison : Intercepte la requête et doit répondre immédiatement avec 'respondWith' qui prend une Promesse
+function surRequete(evenement) {
+    // console.log("[ServiceWorker] Interception requête : " + evenement.request.url);
+    
+    // On répond avec notre stratégie personnalisée
+    evenement.respondWith(strategieCacheOuReseau(evenement.request));
+}
+
+// Fonction asynchrone
+// Raison : Doit attendre la réponse du cache (match) ou du réseau (fetch)
+async function strategieCacheOuReseau(requete) {
+    // Stratégie : Cache First (Priorité Cache), puis Réseau + Mise à jour Cache
+
+    try {
+        // 1. On regarde si on a déjà la réponse en local
+        let reponseCachee = await caches.match(requete);
+
+        if (reponseCachee) {
+            // console.log("[ServiceWorker] Trouvé dans le cache : " + requete.url);
+            return reponseCachee;
+        }
+
+        // 2. Si pas en cache, on va chercher sur internet
+        // console.log("[ServiceWorker] Pas en cache, appel réseau : " + requete.url);
+        let reponseReseau = await fetch(requete);
+
+        // 3. Si la réponse réseau est valide, on la sauvegarde pour la prochaine fois
+        if (reponseReseau && reponseReseau.status === 200 && requete.method === "GET") {
+            
+            // On doit cloner la réponse car elle ne peut être lue qu'une fois
+            let reponseClone = reponseReseau.clone();
+            
+            let espaceCache = await caches.open(VERSION_CACHE);
+            espaceCache.put(requete, reponseClone);
+            
+            // console.log("[ServiceWorker] Nouvelle ressource mise en cache : " + requete.url);
+        }
+
+        return reponseReseau;
+
+    } catch (erreur) {
+        console.error("[ServiceWorker] Échec fetch (Hors ligne ?) :", erreur);
+        // Ici, pas de redirection spécifique iOS/Ipad, on laisse l'erreur ou on pourrait renvoyer une page offline.html générique
+    }
 }

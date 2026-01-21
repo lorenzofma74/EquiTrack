@@ -1,26 +1,18 @@
 /******************************************************************************/
-/* Constants                                                                  */
+/* script: pwa.js (Version Corrigée)                                          */
 /******************************************************************************/
 
 const INSTALL_BUTTON = document.getElementById("install_button");
 const RELOAD_BUTTON = document.getElementById("reload_button");
 
-/******************************************************************************/
-/* Listeners                                                                  */
-/******************************************************************************/
+// --- VARIABLES GLOBALES ---
+let beforeInstallPromptEvent;
+let installResult = null;
+let registration = null;
+let serviceWorker = null;
 
 INSTALL_BUTTON.addEventListener("click", installPwa);
 RELOAD_BUTTON.addEventListener("click", reloadPwa);
-
-/******************************************************************************/
-/* Global Variable                                                            */
-/******************************************************************************/
-
-let beforeInstallPromptEvent;
-
-/******************************************************************************/
-/* Main                                                                       */
-/******************************************************************************/
 
 main();
 
@@ -31,40 +23,31 @@ function main()
 	if(window.matchMedia("(display-mode: standalone)").matches)
 	{
 		console.log("Running as PWA");
-
 		registerServiceWorker();
 	}
 	else
 	{
 		console.log("Running as Web page");
-
 		window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
 		window.addEventListener("appinstalled", onAppInstalled);
 	}
 }
 
-/******************************************************************************/
-/* Install PWA                                                                */
-/******************************************************************************/
-
 function onBeforeInstallPrompt(event)
 {
 	console.debug("onBeforeInstallPrompt()");
-
 	event.preventDefault();
 	INSTALL_BUTTON.disabled = false;
 	beforeInstallPromptEvent = event;
 }
 
-/**************************************/
-
 async function installPwa()
 {
 	console.debug("installPwa()");
 
-	const RESULT = await beforeInstallPromptEvent.prompt();
+	installResult = await beforeInstallPromptEvent.prompt();
 
-	switch(RESULT.outcome)
+	switch(installResult.outcome)
 	{
 		case "accepted": console.log("PWA Install accepted"); break;
 		case "dismissed": console.log("PWA Install dismissed"); break;
@@ -74,18 +57,11 @@ async function installPwa()
 	window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
 }
 
-/**************************************/
-
 function onAppInstalled()
 {
 	console.debug("onAppInstalled()");
-
 	registerServiceWorker();
 }
-
-/******************************************************************************/
-/* Register Service Worker                                                    */
-/******************************************************************************/
 
 async function registerServiceWorker()
 {
@@ -97,10 +73,10 @@ async function registerServiceWorker()
 
 		try
 		{
-			const REGISTRATION = await navigator.serviceWorker.register("./service_worker.js");
-			REGISTRATION.onupdatefound = onUpdateFound;
+			registration = await navigator.serviceWorker.register("./service_worker.js");
+			registration.onupdatefound = onUpdateFound;
 
-			console.log("Service Worker registration successful with scope:", REGISTRATION.scope);
+			console.log("Service Worker registration successful with scope:", registration.scope);
 		}
 		catch(error)
 		{
@@ -113,41 +89,30 @@ async function registerServiceWorker()
 	}
 }
 
-/******************************************************************************/
-/* Update Service Worker                                                    */
-/******************************************************************************/
-
 function onUpdateFound(event)
 {
 	console.debug("onUpdateFound()");
 
-	const REGISTRATION = event.target;
-	const SERVICE_WORKER = REGISTRATION.installing;
-	SERVICE_WORKER.addEventListener("statechange", onStateChange);
+	registration = event.target;
+	serviceWorker = registration.installing;
+	serviceWorker.addEventListener("statechange", onStateChange);
 }
-
-/**************************************/
 
 function onStateChange(event)
 {
-	const SERVICE_WORKER = event.target;
+	serviceWorker = event.target;
 
-	console.debug("onStateChange", SERVICE_WORKER.state);
+	console.debug("onStateChange", serviceWorker.state);
 
-	if(SERVICE_WORKER.state == "installed" && navigator.serviceWorker.controller)
+	if(serviceWorker.state == "installed" && navigator.serviceWorker.controller)
 	{
 		console.log("PWA Updated");
 		RELOAD_BUTTON.disabled = false;
 	}
 }
 
-/**************************************/
-
 function reloadPwa()
 {
 	console.debug("reloadPwa()");
-
 	window.location.reload();
 }
-
-/******************************************************************************/

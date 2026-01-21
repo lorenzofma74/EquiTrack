@@ -1,0 +1,43 @@
+    /* --- DESIGN MODERN TEAL --- */
+    body { background-color: #f0f2f5; font-family: 'Roboto', sans-serif; color: #333; }
+    h1, h2, h3, h4, .mdl-layout-title { font-family: 'Poppins', sans-serif; }
+
+    .mdl-layout__header { background: #00695c; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .mdl-layout-title { font-weight: 700; letter-spacing: 1px; }
+
+    .mdl-card {
+        border-radius: 20px;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 20px;
+        min-height: auto;
+    }
+    .mdl-card__title { padding: 20px 25px; }
+
+    .weather-card { background: linear-gradient(135deg, #26a69a 0%, #00695c 100%); color: white; }
+    .weather-content {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0 25px 20px 25px;
+    }
+    .weather-temp { font-size: 3.5rem; font-weight: 700; line-height: 1; margin: 0; }
+    .weather-desc { opacity: 0.9; font-size: 1.1rem; margin-top: 5px; font-weight: 300; }
+    .weather-icon-large { font-size: 80px !important; opacity: 0.8; color: white; }
+    .weather-footer { background: rgba(0,0,0,0.1); padding: 15px 25px; border:none; }
+    .weather-footer a { color: white; text-decoration: none; font-weight: 500; width: 100%; display:block;}
+
+    #map { height: 350px; width: 100%; z-index: 0; border-radius: 0 0 20px 20px; }
+    .map-status-bar { padding: 15px 25px; background: white; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; }
+
+    .sos-card { border: 2px solid #ef5350; background: #ffebee; }
+    .sos-card .mdl-card__title-text { color: #d32f2f; font-weight: bold; }
+    .sos-btn {
+        border-radius: 50px; height: 55px; font-size: 16px; font-weight: bold;
+        box-shadow: 0 8px 20px rgba(211, 47, 47, 0.3); width: 100%; background-color: #d32f2f; color: white;
+    }
+
+    .btn-pwa { border-radius: 30px; margin-bottom: 20px; }
+
+    /* Style pour les items d'exercices */
+    .exo-item { border-bottom: 1px solid #eee; padding: 10px 0; }
+    .exo-item:last-child { border-bottom: none; }

@@ -1,0 +1,40 @@
+body { background-color: #f0f2f5; font-family: 'Roboto', sans-serif; }
+h2, h3 { font-family: 'Poppins', sans-serif; }
+
+/* Header Profil */
+.profile-header-bg {
+    background: linear-gradient(to right, #00695c, #4db6ac);
+    height: 180px;
+    position: relative;
+    border-radius: 0 0 30px 30px;
+    margin-bottom: 60px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.profile-avatar {
+    width: 100px; height: 100px;
+    background: white; border-radius: 50%;
+    position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex; justify-content: center; align-items: center; color: #00695c;
+}
+.back-btn {
+    position: absolute; top: 20px; left: 20px;
+    color: white; background: rgba(255,255,255,0.2);
+    border-radius: 50%; width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center; text-decoration: none;
+}
+
+/* Cartes */
+.mdl-card {
+    border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+    overflow: visible; padding: 20px; margin-bottom: 20px; width: 100%; box-sizing: border-box;
+}
+.card-heading { font-size: 1.2rem; font-weight: 600; color: #333; margin-bottom: 20px; display: block; }
+.section-icon { color: #00695c; margin-right: 10px; vertical-align: middle; }
+
+/* Calendar */
+#calendar { font-family: 'Roboto', sans-serif; font-size: 13px; }
+.fc-button { background-color: #00695c !important; border: none !important; border-radius: 8px !important; }
+.fc-toolbar-title { font-size: 1.2em !important; }
+
+.mdl-textfield { width: 100%; }

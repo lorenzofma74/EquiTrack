@@ -1,157 +1,199 @@
 /******************************************************************************/
-/* script: meteo_detail.js (Version Full MDL Design)                          */
+/* script: meteo_detail.js */
 /******************************************************************************/
 
-const LISTE_CONTAINER = document.getElementById("liste-heures");
+/* --- CONFIGURATION GLOBALE --- */
+const CONTENEUR_LISTE = document.getElementById("liste-heures");
 
-window.addEventListener("load", chargerMeteoDetaillee);
+/* --- VARIABLES GLOBALES (ETAT) --- */
+let chaineLocalisation = null;
+let objetPosition = null;
+let donneesCache = null;
 
-function chargerMeteoDetaillee()
-{
-    const LOCATION_STRING = localStorage.getItem("lastKnownLocation");
+/* --- INITIALISATION & ECOUTEURS --- */
 
-    if (!LOCATION_STRING)
-    {
-        LISTE_CONTAINER.innerHTML = "<li class='mdl-list__item'>Erreur : Position introuvable.</li>";
+// On attache la fonction de démarrage à l'événement de chargement de la fenêtre
+window.addEventListener("load", demarrerPageMeteo);
+
+// Fonction synchrone
+// Raison : C'est le point d'entrée qui orchestre le chargement initial sans attente bloquante immédiate
+function demarrerPageMeteo() {
+    console.log("--- DÉMARRAGE PAGE DÉTAIL MÉTÉO ---");
+    
+    // Récupération de la position sauvegardée dans le localStorage
+    chaineLocalisation = localStorage.getItem("lastKnownLocation");
+
+    if (!chaineLocalisation) {
+        console.error("Erreur : Aucune position GPS trouvée dans le stockage.");
+        CONTENEUR_LISTE.innerHTML = "<li class='mdl-list__item'>Erreur : Position introuvable. Veuillez activer le GPS sur l'accueil.</li>";
         return;
     }
 
-    const POSITION = JSON.parse(LOCATION_STRING);
-    recupererDonneesAPI(POSITION.lat, POSITION.lon);
+    objetPosition = JSON.parse(chaineLocalisation);
+    console.log("Position chargée depuis le cache :", objetPosition);
+
+    // Lancement de la récupération des données
+    recupererDonneesMeteo(objetPosition.lat, objetPosition.lon);
 }
 
-function recupererDonneesAPI(lat, lon)
-{
-    const URL = "https://api.open-meteo.com/v1/forecast"
+// Fonction asynchrone
+// Raison : Effectue un appel réseau (fetch) qui nécessite d'attendre la réponse du serveur (await)
+async function recupererDonneesMeteo(lat, lon) {
+    console.log("Préparation de la requête API pour Lat:", lat, "Lon:", lon);
+
+    // Construction de l'URL (utilisation de let, pas de const)
+    let urlApi = "https://api.open-meteo.com/v1/forecast"
         + "?latitude=" + lat
         + "&longitude=" + lon
         + "&hourly=temperature_2m,precipitation_probability,weathercode"
-        + "&forecast_days=3"
+        + "&forecast_days=3" // jusqu'à 3 jours
         + "&models=best_match"
         + "&timezone=auto";
 
-    fetch(URL)
-        .then(function(response) { return response.json(); })
-        .then(function(data) {
+    console.log("URL générée :", urlApi);
 
-            /* SAUVEGARDE */
-            localStorage.setItem("meteoCacheDetail", JSON.stringify(data));
+    try {
+        let reponse = await fetch(urlApi);
 
-            afficherListe(data);
-        })
-        .catch(function(err) {
-            console.error("Mode Hors Ligne", err);
+        if (!reponse.ok) {
+            throw new Error("Erreur HTTP : " + reponse.status);
+        }
 
-            /* RECUPERATION */
-            const CACHE = localStorage.getItem("meteoCacheDetail");
-            if (CACHE)
-            {
-                let dataCachee = JSON.parse(CACHE);
-                afficherListe(dataCachee);
+        let donneesJson = await reponse.json();
+        
+        console.log("Données reçues de l'API :", donneesJson);
 
-                /* Petit message d'alerte en haut de la liste */
-                LISTE_CONTAINER.innerHTML = "<li class='mdl-list__item mdl-color--red-100'>Mode Hors Ligne : Données archivées</li>" + LISTE_CONTAINER.innerHTML;
-            }
-            else
-            {
-                LISTE_CONTAINER.innerHTML = "<li class='mdl-list__item'>Pas de connexion et pas de cache disponible.</li>";
-            }
-        });
+        // Sauvegarde dans le cache
+        localStorage.setItem("meteoCacheDetail", JSON.stringify(donneesJson));
+        
+        // Lancement de l'affichage
+        afficherListePrevisions(donneesJson);
+
+    } catch (erreur) {
+        console.warn("Échec réseau ou API :", erreur);
+        console.log("Basculement sur le mode hors ligne...");
+        chargerDonneesCache();
+    }
 }
-function afficherListe(data)
-{
-    LISTE_CONTAINER.innerHTML = "";
 
-    let horaires = data.hourly.time;
-    let temperatures = data.hourly.temperature_2m;
-    let pluies = data.hourly.precipitation_probability;
+// Fonction synchrone
+// Raison : Lecture simple du LocalStorage (opération immédiate)
+function chargerDonneesCache() {
+    let cacheTexte = localStorage.getItem("meteoCacheDetail");
+    
+    if (cacheTexte) {
+        donneesCache = JSON.parse(cacheTexte);
+        console.log("Données récupérées du cache local :", donneesCache);
+        
+        afficherListePrevisions(donneesCache);
 
+        // Ajout d'un bandeau d'avertissement
+        CONTENEUR_LISTE.innerHTML = "<li class='mdl-list__item mdl-color--red-100' style='justify-content:center;'><strong>Mode Hors Ligne : Données archivées</strong></li>" + CONTENEUR_LISTE.innerHTML;
+    } else {
+        console.error("Aucun cache disponible.");
+        CONTENEUR_LISTE.innerHTML = "<li class='mdl-list__item'>Pas de connexion internet et aucun cache disponible.</li>";
+    }
+}
+
+// Fonction synchrone
+// Raison : Manipulation du DOM et boucles logiques
+function afficherListePrevisions(donnees) {
+    console.log("Début de la génération de l'affichage...");
+    
+    CONTENEUR_LISTE.innerHTML = "";
+
+    // Variables de travail (let uniquement)
+    let tableauHeures = donnees.hourly.time;
+    let tableauTemperatures = donnees.hourly.temperature_2m;
+    let tableauPluie = donnees.hourly.precipitation_probability;
+    
     let datePrecedente = "";
     let heureActuelle = new Date().getHours();
-    let aujourdhui = data.hourly.time[0].split("T")[0];
+    let dateAujourdhui = tableauHeures[0].split("T")[0];
 
-    for (let i = 0; i < horaires.length; i++)
-    {
-        let dateComplete = horaires[i].split("T")[0];
-        let heureSeule = horaires[i].split("T")[1];
-        let h = parseInt(heureSeule.split(":")[0]);
+    // Boucle classique (pas de forEach)
+    for (let i = 0; i < tableauHeures.length; i++) {
+        let dateComplete = tableauHeures[i].split("T")[0];
+        let heureTexte = tableauHeures[i].split("T")[1];
+        let heureEntiere = parseInt(heureTexte.split(":")[0]);
+        let temperature = tableauTemperatures[i];
+        let probabilitePluie = tableauPluie[i];
 
-        /* --- 1. SÉPARATEUR DE DATE (Design MDL) --- */
-        if (dateComplete !== datePrecedente)
-        {
-            let dateObj = new Date(dateComplete);
-            let options = { weekday: 'long', day: 'numeric', month: 'long' };
-            let dateLisible = dateObj.toLocaleDateString('fr-FR', options);
-            dateLisible = dateLisible.charAt(0).toUpperCase() + dateLisible.slice(1);
+        // 1. Gestion des séparateurs de date
+        if (dateComplete !== datePrecedente) {
+            let htmlHeader = genererHtmlEnTete(dateComplete);
+            CONTENEUR_LISTE.innerHTML += htmlHeader;
+            datePrecedente = dateComplete;
+        }
 
-            // Utilisation de classes MDL pour le fond gris clair (grey-200) et le texte indigo
-            let htmlHeader =
-            '<li class="mdl-list__item sticky-date mdl-color--grey-200">' +
+        // 2. Détermination du style (passé ou futur)
+        let estPasse = (dateComplete === dateAujourdhui && heureEntiere < heureActuelle);
+
+        // 3. Génération de la ligne météo
+        let htmlLigne = genererHtmlLigne(heureTexte, temperature, probabilitePluie, estPasse);
+        CONTENEUR_LISTE.innerHTML += htmlLigne;
+    }
+
+    console.log("Affichage terminé. " + tableauHeures.length + " lignes générées.");
+}
+
+// Fonction synchrone
+// Raison : Helper de formatage de string (pur calcul)
+function genererHtmlEnTete(dateString) {
+    let objetDate = new Date(dateString);
+    let options = { weekday: 'long', day: 'numeric', month: 'long' };
+    let dateLisible = objetDate.toLocaleDateString('fr-FR', options); 
+    
+    // Met la première lettre en majuscule
+    
+    dateLisible = dateLisible.charAt(0).toUpperCase() + dateLisible.slice(1);  
+
+    // Retourne le HTML sous forme de string
+    return '<li class="mdl-list__item sticky-date mdl-color--grey-200">' +
                 '<span class="mdl-list__item-primary-content">' +
                     '<i class="material-icons mdl-list__item-icon mdl-color-text--indigo-500">event</i>' +
                     '<span class="mdl-typography--font-bold mdl-color-text--indigo-700">' + dateLisible + '</span>' +
                 '</span>' +
             '</li>';
+}
 
-            LISTE_CONTAINER.innerHTML += htmlHeader;
-            datePrecedente = dateComplete;
-        }
+// Fonction synchrone
+// Raison : Helper de construction HTML (évite les doublons dans la boucle principale)
+function genererHtmlLigne(heure, temp, pluie, estPasse) {
+    // Variables de configuration visuelle
+    let iconeNom = "wb_sunny";
+    let classeCouleur = "mdl-color-text--orange-500";
+    let classeFond = "";
+    let styleOpacite = "";
 
-        /* --- 2. LOGIQUE DU DESIGN (Couleurs MDL) --- */
-        let icone = "wb_sunny";
-        let classeCouleurIcone = "mdl-color-text--orange-500"; // Jaune/Orange Material
-        let classeFondLigne = ""; // Fond blanc par défaut
+    // Logique des icônes
+    if (pluie >= 50) {
+        iconeNom = "water_drop";
+        classeCouleur = "mdl-color-text--blue-500";
+        classeFond = "mdl-color--blue-50";
+    } else if (pluie > 20) {
+        iconeNom = "cloud";
+        classeCouleur = "mdl-color-text--blue-grey-400";
+    }
 
-        // Si risque de pluie > 50%
-        if (pluies[i] >= 50) {
-            icone = "water_drop";
-            classeCouleurIcone = "mdl-color-text--blue-500"; // Bleu Material
-            classeFondLigne = "mdl-color--blue-50"; // Fond bleu très pâle (classe MDL officielle)
-        }
-        else if (pluies[i] > 20) {
-            icone = "cloud";
-            classeCouleurIcone = "mdl-color-text--blue-grey-400"; // Gris bleuté Material
-        }
+    // Gestion de l'opacité pour les heures passées
+    if (estPasse) {
+        classeCouleur = "mdl-color-text--grey-400";
+        styleOpacite = "opacity: 0.5;";
+    }
 
-        // Si l'heure est passée (pour le jour actuel)
-        let styleOpacite = "";
-        if (dateComplete === aujourdhui && h < heureActuelle) {
-            classeCouleurIcone = "mdl-color-text--grey-400";
-            styleOpacite = "opacity: 0.5;";
-        }
-
-        /* --- 3. GÉNÉRATION DE LA LIGNE (Classes MDL uniquement) --- */
-        let htmlItem =
-        '<li class="mdl-list__item mdl-list__item--two-line ' + classeFondLigne + '" style="' + styleOpacite + '">' +
-
-            /* GAUCHE : Icône + Heure + Pluie */
+    // Construction du HTML
+    return '<li class="mdl-list__item mdl-list__item--two-line ' + classeFond + '" style="' + styleOpacite + '">' +
             '<span class="mdl-list__item-primary-content">' +
-                // Avatar (Icône)
-                '<i class="material-icons mdl-list__item-avatar grosse-icone ' + classeCouleurIcone + '" style="background:transparent;">' + icone + '</i>' +
-
-                // Heure
-                '<span>' + heureSeule + '</span>' +
-
-                // Sous-titre (Probabilité pluie)
-                '<span class="mdl-list__item-sub-title">' +
-                   'Pluie : ' + pluies[i] + '%' +
-                '</span>' +
+                '<i class="material-icons mdl-list__item-avatar grosse-icone ' + classeCouleur + '" style="background:transparent;">' + iconeNom + '</i>' +
+                '<span>' + heure + '</span>' +
+                '<span class="mdl-list__item-sub-title">Pluie : ' + pluie + '%</span>' +
             '</span>' +
-
-            /* DROITE : Température */
             '<span class="mdl-list__item-secondary-content">' +
                 '<span class="mdl-list__item-secondary-info-text">' +
-                    // Température en Gras et couleur sombre
-                    '<span class="mdl-typography--font-bold mdl-typography--subhead mdl-color-text--grey-800">' +
-                        Math.round(temperatures[i]) + '°' +
-                    '</span>' +
+                    '<span class="mdl-typography--font-bold mdl-typography--subhead mdl-color-text--grey-800">' + Math.round(temp) + '°</span>' +
                 '</span>' +
             '</span>' +
-
         '</li>' +
-        // Ligne de séparation fine MDL
         '<li class="mdl-list__item" style="padding:0; min-height:0; border-bottom: 1px solid #eee;"></li>';
-
-        LISTE_CONTAINER.innerHTML += htmlItem;
-    }
 }
