@@ -133,19 +133,7 @@ Le cycle de mise à jour des clients est géré par le versioning du cache.
 4.  Au prochain rechargement, le navigateur détectera le changement binaire du SW et proposera la mise à jour via le bouton "Mise à jour dispo" (géré par `pwa.js`).
 
 ### 7.3 Structure des fichiers
-```bash
-/EquiTrack
-├── index.html           # Dashboard (Carte, SOS, Météo flash)
-├── formul_cheval.html   # Gestion Profil & Calendrier
-├── meteo.html           # Page météo détaillée
-├── service_worker.js    # Cœur de la PWA (Cache & Réseau)
-├── js/
-│   ├── app.js           # Logique principale (GPS, API, Capteurs)
-│   ├── formul_cheval.js # Logique FullCalendar & Stockage
-│   ├── meteo_detail.js  # Logique page météo
-│   └── pwa.js           # Gestion de l'installation A2HS
-└── css/                 # Styles personnalisés & correctifs MDL
-```
+![arbo](./img/screenshot_21012026_165934.jpg)
 
 ---
 
