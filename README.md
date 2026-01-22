@@ -129,7 +129,7 @@ L'application exploite les capteurs natifs du smartphone via JavaScript (Vanilla
 Le cycle de mise à jour des clients est géré par le versioning du cache.
 1.  Effectuer les modifications dans le code HTML/JS/CSS.
 2.  Ouvrir le fichier `service_worker.js`.
-3.  Incrémenter la constante de version : `const VERSION_CACHE = "version_4.5_android";`.
+3.  Incrémenter la constante de version : `const VERSION_CACHE = "1.2";`.
 4.  Au prochain rechargement, le navigateur détectera le changement binaire du SW et proposera la mise à jour via le bouton "Mise à jour dispo" (géré par `pwa.js`).
 
 ### 7.3 Structure des fichiers
