@@ -1,98 +1,104 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#00695c">
-  <title>Gérer mon Cheval</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00695c">
+    <title>Gérer mon Cheval</title>
 
-  <link rel="stylesheet" href="./lib/mdl/material.min.css">
-  <script defer src="./lib/mdl/material.min.js"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./lib/mdl/material.min.css">
+    <script defer src="./lib/mdl/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="./css/style.css">
-  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-  <script defer src="./js/formul_cheval.js"></script>
-  <link rel="stylesheet" href="./css/formul_cheval.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script defer src="./js/formul_cheval.js"></script>
+    <link rel="stylesheet" href="./css/formul_cheval.css">
 
 </head>
+
 <body>
 
-  <div class="profile-header-bg">
-      <a href="index.html" class="back-btn"><i class="material-icons">arrow_back</i></a>
-      <div class="profile-avatar"><i class="material-icons" style="font-size: 50px;">pets</i></div>
-  </div>
+    <div class="profile-header-bg">
+        <a href="index.html" class="back-btn"><i class="material-icons">arrow_back</i></a>
+        <div class="profile-avatar"><i class="material-icons" style="font-size: 50px;">pets</i></div>
+    </div>
 
-  <div class="mdl-grid" style="max-width: 1200px; margin: 0 auto; margin-top: -20px;">
+    <div class="mdl-grid" style="max-width: 1200px; margin: 0 auto; margin-top: -20px;">
 
-    <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-tablet">
-        <div class="mdl-card mdl-shadow--2dp w3-white">
-            <span class="card-heading"><i class="material-icons section-icon">badge</i>Identité</span>
-            <form action="#">
+        <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-tablet">
+            <div class="mdl-card mdl-shadow--2dp w3-white">
+                <span class="card-heading"><i class="material-icons section-icon">badge</i>Identité</span>
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" id="nom-cheval">
+                        <label class="mdl-textfield__label" for="nom-cheval">Nom du cheval</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" id="race-cheval">
+                        <label class="mdl-textfield__label" for="race-cheval">Race</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="number" id="age-cheval">
+                        <label class="mdl-textfield__label" for="age-cheval">Âge (ans)</label>
+                    </div>
+                    <button id="btn-save-info" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+                        style="width: 100%; border-radius: 20px; background-color: #00695c;">
+                        ENREGISTRER
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-tablet">
+            <div class="mdl-card mdl-shadow--2dp w3-white">
+                <span class="card-heading"><i class="material-icons section-icon">event_available</i>Ajouter</span>
+
+                <label style="color:#888; font-size:12px;">Type d'acte</label>
+                <select id="type-event" class="mdl-textfield__input"
+                    style="height:35px; border-bottom:1px solid rgba(0,0,0,.12); margin-bottom:15px;">
+                    <option value="vaccin">💉 Vaccin</option>
+                    <option value="marechal">🔨 Maréchal</option>
+                    <option value="osteo">🦴 Ostéo</option>
+                    <option value="cours">🎓 Cours</option>
+                    <option value="concours">🏆 Concours</option>
+                    <option value="autre">📝 Autre</option>
+                </select>
+
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="nom-cheval">
-                    <label class="mdl-textfield__label" for="nom-cheval">Nom du cheval</label>
+                    <input class="mdl-textfield__input" type="date" id="date-event">
+                    <label class="mdl-textfield__label" for="date-event">Date</label>
                 </div>
+
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="race-cheval">
-                    <label class="mdl-textfield__label" for="race-cheval">Race</label>
+                    <input class="mdl-textfield__input" type="text" id="desc-event">
+                    <label class="mdl-textfield__label" for="desc-event">Note rapide</label>
                 </div>
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="number" id="age-cheval">
-                    <label class="mdl-textfield__label" for="age-cheval">Âge (ans)</label>
-                </div>
-                <button id="btn-save-info" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" style="width: 100%; border-radius: 20px; background-color: #00695c;">
-                    ENREGISTRER
+
+                <button id="btn-add-event" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent"
+                    style="width: 100%; border-radius: 20px; background-color: #ef6c00;">
+                    AJOUTER AU PLANNING
                 </button>
-            </form>
-        </div>
-    </div>
-
-    <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-tablet">
-        <div class="mdl-card mdl-shadow--2dp w3-white">
-            <span class="card-heading"><i class="material-icons section-icon">event_available</i>Ajouter</span>
-
-            <label style="color:#888; font-size:12px;">Type d'acte</label>
-            <select id="type-event" class="mdl-textfield__input" style="height:35px; border-bottom:1px solid rgba(0,0,0,.12); margin-bottom:15px;">
-                <option value="vaccin">💉 Vaccin</option>
-                <option value="marechal">🔨 Maréchal</option>
-                <option value="osteo">🦴 Ostéo</option>
-                <option value="cours">🎓 Cours</option>
-                <option value="concours">🏆 Concours</option>
-                <option value="autre">📝 Autre</option>
-            </select>
-
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input" type="date" id="date-event">
-                <label class="mdl-textfield__label" for="date-event">Date</label>
             </div>
-
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input" type="text" id="desc-event">
-                <label class="mdl-textfield__label" for="desc-event">Note rapide</label>
-            </div>
-
-            <button id="btn-add-event" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" style="width: 100%; border-radius: 20px; background-color: #ef6c00;">
-                AJOUTER AU PLANNING
-            </button>
         </div>
-    </div>
 
-    <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-tablet">
-         <div class="mdl-card mdl-shadow--2dp w3-white" style="min-height: 380px;">
-            <span class="card-heading"><i class="material-icons section-icon">history</i>Derniers Actes</span>
-            <ul class="mdl-list" id="liste-historique" style="padding:0; margin:0; width:100%;">
+        <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-tablet">
+            <div class="mdl-card mdl-shadow--2dp w3-white" style="min-height: 380px;">
+                <span class="card-heading"><i class="material-icons section-icon">history</i>Derniers Actes</span>
+                <ul class="mdl-list" id="liste-historique" style="padding:0; margin:0; width:100%;">
                 </ul>
-         </div>
-    </div>
-
-    <div class="mdl-cell mdl-cell--12-col">
-        <div class="mdl-card mdl-shadow--2dp w3-white">
-            <div id='calendar'></div>
+            </div>
         </div>
-    </div>
 
-  </div>
+        <div class="mdl-cell mdl-cell--12-col">
+            <div class="mdl-card mdl-shadow--2dp w3-white">
+                <div id='calendar'></div>
+            </div>
+        </div>
+
+    </div>
 </body>
+
 </html>

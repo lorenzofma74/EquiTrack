@@ -19,7 +19,7 @@
   "background_color": "#ffffff",
   "display": "standalone",
   "description": "Ma première PWA",
-	"orientation": "portrait",
+  "orientation": "portrait",
   "start_url": "https://srv-peda2.iut-acy.univ-smb.fr/flammial/EquiTrack/",
   "scope": "https://srv-peda2.iut-acy.univ-smb.fr/flammial/EquiTrack/"
 }

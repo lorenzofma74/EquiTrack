@@ -19,9 +19,9 @@ window.addEventListener("load", demarrerPageMeteo);
 // Raison : C'est le point d'entrée qui orchestre le chargement initial sans attente bloquante immédiate
 function demarrerPageMeteo() {
     console.log("--- DÉMARRAGE PAGE DÉTAIL MÉTÉO ---");
-    
+
     // Récupération de la position sauvegardée dans le localStorage
-    chaineLocalisation = localStorage.getItem("lastKnownLocation");
+    chaineLocalisation = localStorage.getItem("dernierePositionConnue");
 
     if (!chaineLocalisation) {
         console.error("Erreur : Aucune position GPS trouvée dans le stockage.");
@@ -60,12 +60,12 @@ async function recupererDonneesMeteo(lat, lon) {
         }
 
         let donneesJson = await reponse.json();
-        
+
         console.log("Données reçues de l'API :", donneesJson);
 
         // Sauvegarde dans le cache
         localStorage.setItem("meteoCacheDetail", JSON.stringify(donneesJson));
-        
+
         // Lancement de l'affichage
         afficherListePrevisions(donneesJson);
 
@@ -80,11 +80,11 @@ async function recupererDonneesMeteo(lat, lon) {
 // Raison : Lecture simple du LocalStorage (opération immédiate)
 function chargerDonneesCache() {
     let cacheTexte = localStorage.getItem("meteoCacheDetail");
-    
+
     if (cacheTexte) {
         donneesCache = JSON.parse(cacheTexte);
         console.log("Données récupérées du cache local :", donneesCache);
-        
+
         afficherListePrevisions(donneesCache);
 
         // Ajout d'un bandeau d'avertissement
@@ -99,14 +99,14 @@ function chargerDonneesCache() {
 // Raison : Manipulation du DOM et boucles logiques
 function afficherListePrevisions(donnees) {
     console.log("Début de la génération de l'affichage...");
-    
+
     CONTENEUR_LISTE.innerHTML = "";
 
     // Variables de travail (let uniquement)
     let tableauHeures = donnees.hourly.time;
     let tableauTemperatures = donnees.hourly.temperature_2m;
     let tableauPluie = donnees.hourly.precipitation_probability;
-    
+
     let datePrecedente = "";
     let heureActuelle = new Date().getHours();
     let dateAujourdhui = tableauHeures[0].split("T")[0];
@@ -142,19 +142,19 @@ function afficherListePrevisions(donnees) {
 function genererHtmlEnTete(dateString) {
     let objetDate = new Date(dateString);
     let options = { weekday: 'long', day: 'numeric', month: 'long' };
-    let dateLisible = objetDate.toLocaleDateString('fr-FR', options); 
-    
+    let dateLisible = objetDate.toLocaleDateString('fr-FR', options);
+
     // Met la première lettre en majuscule
-    
-    dateLisible = dateLisible.charAt(0).toUpperCase() + dateLisible.slice(1);  
+
+    dateLisible = dateLisible.charAt(0).toUpperCase() + dateLisible.slice(1);
 
     // Retourne le HTML sous forme de string
     return '<li class="mdl-list__item sticky-date mdl-color--grey-200">' +
-                '<span class="mdl-list__item-primary-content">' +
-                    '<i class="material-icons mdl-list__item-icon mdl-color-text--indigo-500">event</i>' +
-                    '<span class="mdl-typography--font-bold mdl-color-text--indigo-700">' + dateLisible + '</span>' +
-                '</span>' +
-            '</li>';
+        '<span class="mdl-list__item-primary-content">' +
+        '<i class="material-icons mdl-list__item-icon mdl-color-text--indigo-500">event</i>' +
+        '<span class="mdl-typography--font-bold mdl-color-text--indigo-700">' + dateLisible + '</span>' +
+        '</span>' +
+        '</li>';
 }
 
 // Fonction synchrone
@@ -184,16 +184,16 @@ function genererHtmlLigne(heure, temp, pluie, estPasse) {
 
     // Construction du HTML
     return '<li class="mdl-list__item mdl-list__item--two-line ' + classeFond + '" style="' + styleOpacite + '">' +
-            '<span class="mdl-list__item-primary-content">' +
-                '<i class="material-icons mdl-list__item-avatar grosse-icone ' + classeCouleur + '" style="background:transparent;">' + iconeNom + '</i>' +
-                '<span>' + heure + '</span>' +
-                '<span class="mdl-list__item-sub-title">Pluie : ' + pluie + '%</span>' +
-            '</span>' +
-            '<span class="mdl-list__item-secondary-content">' +
-                '<span class="mdl-list__item-secondary-info-text">' +
-                    '<span class="mdl-typography--font-bold mdl-typography--subhead mdl-color-text--grey-800">' + Math.round(temp) + '°</span>' +
-                '</span>' +
-            '</span>' +
+        '<span class="mdl-list__item-primary-content">' +
+        '<i class="material-icons mdl-list__item-avatar grosse-icone ' + classeCouleur + '" style="background:transparent;">' + iconeNom + '</i>' +
+        '<span>' + heure + '</span>' +
+        '<span class="mdl-list__item-sub-title">Pluie : ' + pluie + '%</span>' +
+        '</span>' +
+        '<span class="mdl-list__item-secondary-content">' +
+        '<span class="mdl-list__item-secondary-info-text">' +
+        '<span class="mdl-typography--font-bold mdl-typography--subhead mdl-color-text--grey-800">' + Math.round(temp) + '°</span>' +
+        '</span>' +
+        '</span>' +
         '</li>' +
         '<li class="mdl-list__item" style="padding:0; min-height:0; border-bottom: 1px solid #eee;"></li>';
 }

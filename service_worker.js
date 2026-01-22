@@ -4,7 +4,7 @@
 
 /* --- CONFIGURATION GLOBALE --- */
 // Incrémentez cette variable pour forcer la mise à jour du cache sur les téléphones
-const VERSION_CACHE = "version_4.4_android";
+const VERSION_CACHE = "1.4";
 
 // Liste des fichiers nécessaires au fonctionnement hors ligne
 const LISTE_FICHIERS_CACHE = [
@@ -47,14 +47,14 @@ function surInstallation(evenement) {
 // Raison : L'ouverture du cache et l'ajout des fichiers (addAll) sont des opérations qui prennent du temps (Promesses)
 async function effectuerMiseEnCache() {
     console.log("[ServiceWorker] Ouverture du cache...");
-    
+
     try {
         // Utilisation de 'let' (pas de const locale)
         let espaceCache = await caches.open(VERSION_CACHE);
-        
+
         console.log("[ServiceWorker] Ajout des fichiers au cache :", LISTE_FICHIERS_CACHE);
         await espaceCache.addAll(LISTE_FICHIERS_CACHE);
-        
+
         console.log("[ServiceWorker] Mise en cache terminée avec succès.");
 
     } catch (erreur) {
@@ -83,8 +83,7 @@ async function nettoyerVieuxCaches() {
 
     try {
         let listeCles = await caches.keys();
-        
-        // Boucle 'for' classique (pas de forEach, pas de map, pas de fonction fléchée)
+
         for (let i = 0; i < listeCles.length; i++) {
             let cleActuelle = listeCles[i];
 
@@ -93,7 +92,7 @@ async function nettoyerVieuxCaches() {
                 await caches.delete(cleActuelle);
             }
         }
-        
+
         console.log("[ServiceWorker] Nettoyage terminé. Cache actif : " + VERSION_CACHE);
 
     } catch (erreur) {
@@ -106,9 +105,7 @@ async function nettoyerVieuxCaches() {
 // Fonction synchrone
 // Raison : Intercepte la requête et doit répondre immédiatement avec 'respondWith' qui prend une Promesse
 function surRequete(evenement) {
-    // console.log("[ServiceWorker] Interception requête : " + evenement.request.url);
-    
-    // On répond avec notre stratégie personnalisée
+
     evenement.respondWith(strategieCacheOuReseau(evenement.request));
 }
 
@@ -132,13 +129,13 @@ async function strategieCacheOuReseau(requete) {
 
         // 3. Si la réponse réseau est valide, on la sauvegarde pour la prochaine fois
         if (reponseReseau && reponseReseau.status === 200 && requete.method === "GET") {
-            
+
             // On doit cloner la réponse car elle ne peut être lue qu'une fois
             let reponseClone = reponseReseau.clone();
-            
+
             let espaceCache = await caches.open(VERSION_CACHE);
             espaceCache.put(requete, reponseClone);
-            
+
             // console.log("[ServiceWorker] Nouvelle ressource mise en cache : " + requete.url);
         }
 
@@ -146,6 +143,5 @@ async function strategieCacheOuReseau(requete) {
 
     } catch (erreur) {
         console.error("[ServiceWorker] Échec fetch (Hors ligne ?) :", erreur);
-        // Ici, pas de redirection spécifique iOS/Ipad, on laisse l'erreur ou on pourrait renvoyer une page offline.html générique
     }
 }

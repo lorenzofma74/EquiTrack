@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1, height=device-height, viewport-fit=cover, width=device-width">
     <meta name="theme-color" content="#00695c">
 
-    <meta name="author" content="prenom.nom@etu.univ-smb.fr"/>
+    <meta name="author" content="prenom.nom@etu.univ-smb.fr" />
     <meta name="description" content="Application de gestion équestre">
 
     <meta property="og:title" content="EquiTrack">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://srv-peda2.iut-acy.univ-smb.fr/flammial/EquiTrack/">
-    <meta property="og:image" content="https://srv-peda2.iut-acy.univ-smb.fr/flammial/EquiTrack/favicon/og-image-1200x630.png">
+    <meta property="og:image"
+        content="https://srv-peda2.iut-acy.univ-smb.fr/flammial/EquiTrack/favicon/og-image-1200x630.png">
 
     <link rel="manifest" href="./favicon/site.webmanifest">
     <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
@@ -24,9 +26,11 @@
 
     <script defer src="./lib/mdl/material.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <link rel="stylesheet" href="./css/style.css">
@@ -38,124 +42,137 @@
 
 <body id="body-page">
 
-  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 
-    <header class="mdl-layout__header">
-      <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title">🐎 EquiTrack</span>
-        <div class="mdl-layout-spacer"></div>
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <span class="mdl-layout-title">🐎 EquiTrack</span>
+                <div class="mdl-layout-spacer"></div>
 
-        <button id="soundButton" class="mdl-button mdl-js-button mdl-button--icon">
-            <i class="material-icons">volume_up</i>
-        </button>
-        <audio id="clickSound" src="./son/cheval.mp3"></audio>
+                <button id="soundButton" class="mdl-button mdl-js-button mdl-button--icon">
+                    <i class="material-icons">volume_up</i>
+                </button>
+                <audio id="clickSound" src="./son/cheval.mp3"></audio>
 
-        <a href="formul_cheval.html" class="mdl-button mdl-js-button mdl-button--icon">
-            <i class="material-icons">account_circle</i>
-        </a>
-      </div>
-    </header>
-
-    <main class="mdl-layout__content">
-      <div class="mdl-grid" style="max-width: 1000px; margin: 0 auto; padding-top: 20px;">
-
-        <div class="mdl-cell mdl-cell--12-col" style="text-align: center;">
-             <button id="install_button" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent btn-pwa">
-                <i class="material-icons">download</i> Installer l'app
-             </button>
-
-             <button id="reload_button" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored btn-pwa">
-                <i class="material-icons">refresh</i> Mise à jour dispo
-             </button>
-        </div>
-
-        <div class="mdl-cell mdl-cell--5-col mdl-cell--12-col-tablet">
-            <div class="mdl-card mdl-shadow--2dp weather-card" style="width: 100%">
-                <div class="mdl-card__title">
-                  <h2 class="mdl-card__title-text" style="font-size: 14px; opacity: 0.8; text-transform: uppercase;">Météo Locale</h2>
-                </div>
-                <div class="weather-content" id="weather">
-                  <div>
-                      <h4 class="weather-temp" id="temperature">--&deg;</h4>
-                      <p id="rain" class="weather-desc">Chargement...</p>
-                  </div>
-                  <i class="material-icons weather-icon-large">cloud</i>
-                </div>
-                <div class="weather-footer">
-                    <a href="meteo.html">VOIR PRÉVISIONS 72H <i class="material-icons" style="float:right">arrow_forward</i></a>
-                    <p id="day-forecast" style="display:none"></p> </div>
+                <a href="formul_cheval.html" class="mdl-button mdl-js-button mdl-button--icon">
+                    <i class="material-icons">account_circle</i>
+                </a>
             </div>
-        </div>
+        </header>
 
-        <div class="mdl-cell mdl-cell--7-col mdl-cell--12-col-tablet">
-          <div class="mdl-card mdl-shadow--2dp" style="width: 100%; background: white;">
-             <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text" style="color: #00695c;">
-                    <i class="material-icons" style="margin-right: 10px; color: #26a69a;">map</i> Carte Live
-                </h2>
-             </div>
+        <main class="mdl-layout__content">
+            <div class="mdl-grid" style="max-width: 1000px; margin: 0 auto; padding-top: 20px;">
 
-             <div style="position: relative;">
-                 <div id="map"></div>
-             </div>
+                <div class="mdl-cell mdl-cell--12-col" style="text-align: center;">
+                    <button id="install_button" disabled
+                        class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent btn-pwa">
+                        <i class="material-icons">download</i> Installer l'app
+                    </button>
 
-             <div class="map-status-bar">
-                <span id="status-map" style="color:#666; font-size:0.9em;">Recherche position...</span>
-                <a id="map-link" href="#" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">PARTAGER</a>
-             </div>
-          </div>
-        </div>
-
-        <div class="mdl-cell mdl-cell--12-col">
-            <div class="mdl-card mdl-shadow--2dp" style="width: 100%;">
-                <div class="mdl-card__title">
-                    <h2 class="mdl-card__title-text" style="color: #00695c;">
-                        <i class="material-icons" style="margin-right: 10px; color: #26a69a;">fitness_center</i> Bibliothèque d'Exercices
-                    </h2>
-                </div>
-                <div id="liste-exercices" class="mdl-card__supporting-text" style="width: 100%; box-sizing: border-box;">
-                    Chargement des exercices...
-                </div>
-                <div class="mdl-card__actions mdl-card--border">
-                    <button id="btn-refresh-exercices" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-                        RAFRAÎCHIR LA LISTE
+                    <button id="reload_button" disabled
+                        class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored btn-pwa">
+                        <i class="material-icons">refresh</i> Mise à jour dispo
                     </button>
                 </div>
+
+                <div class="mdl-cell mdl-cell--5-col mdl-cell--12-col-tablet">
+                    <div class="mdl-card mdl-shadow--2dp weather-card" style="width: 100%">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text"
+                                style="font-size: 14px; opacity: 0.8; text-transform: uppercase;">Météo Locale</h2>
+                        </div>
+                        <div class="weather-content" id="weather">
+                            <div>
+                                <h4 class="weather-temp" id="temperature">--&deg;</h4>
+                                <p id="rain" class="weather-desc">Chargement...</p>
+                            </div>
+                            <i class="material-icons weather-icon-large">cloud</i>
+                        </div>
+                        <div class="weather-footer">
+                            <a href="meteo.html">VOIR PRÉVISIONS 72H <i class="material-icons"
+                                    style="float:right">arrow_forward</i></a>
+                            <p id="day-forecast" style="display:none"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mdl-cell mdl-cell--7-col mdl-cell--12-col-tablet">
+                    <div class="mdl-card mdl-shadow--2dp" style="width: 100%; background: white;">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text" style="color: #00695c;">
+                                <i class="material-icons" style="margin-right: 10px; color: #26a69a;">map</i> Carte Live
+                            </h2>
+                        </div>
+
+                        <div style="position: relative;">
+                            <div id="map"></div>
+                        </div>
+
+                        <div class="map-status-bar">
+                            <span id="status-map" style="color:#666; font-size:0.9em;">Recherche position...</span>
+                            <a id="map-link" href="#"
+                                class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">PARTAGER</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mdl-cell mdl-cell--12-col">
+                    <div class="mdl-card mdl-shadow--2dp" style="width: 100%;">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text" style="color: #00695c;">
+                                <i class="material-icons" style="margin-right: 10px; color: #26a69a;">fitness_center</i>
+                                Bibliothèque d'Exercices
+                            </h2>
+                        </div>
+                        <div id="liste-exercices" class="mdl-card__supporting-text"
+                            style="width: 100%; box-sizing: border-box;">
+                            Chargement des exercices...
+                        </div>
+                        <div class="mdl-card__actions mdl-card--border">
+                            <button id="btn-refresh-exercices"
+                                class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                                RAFRAÎCHIR LA LISTE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mdl-cell mdl-cell--12-col">
+                    <div class="mdl-card mdl-shadow--4dp sos-card" style="width: 100%;">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">
+                                <i class="material-icons" style="margin-right: 10px;">warning</i> SOS CHUTE
+                            </h2>
+                        </div>
+
+                        <div class="mdl-card__supporting-text" style="padding: 0 25px 20px 25px;">
+                            <p style="color: #d32f2f;">Entrez le numéro à contacter en cas de chute.</p>
+
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"
+                                style="width: 100%;">
+                                <input class="mdl-textfield__input" type="tel" id="tel-urgence">
+                                <label class="mdl-textfield__label" for="tel-urgence" style="color: #d32f2f;">Numéro
+                                    d'urgence</label>
+                            </div>
+
+                            <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                                <p id="debug-force" style="font-size:0.8em; color:#ef9a9a;">Force: 0</p>
+                                <p id="status-sos" style="font-weight:bold; color:#c62828;">EN ATTENTE</p>
+                            </div>
+                        </div>
+
+                        <div class="mdl-card__actions mdl-card--border"
+                            style="padding:20px; border-top: 1px solid rgba(211,47,47,0.1);">
+                            <button id="btn-start" class="mdl-button mdl-js-button mdl-button--raised sos-btn">
+                                ACTIVER LA DÉTECTION
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </div>
-
-        <div class="mdl-cell mdl-cell--12-col">
-           <div class="mdl-card mdl-shadow--4dp sos-card" style="width: 100%;">
-              <div class="mdl-card__title">
-                 <h2 class="mdl-card__title-text">
-                    <i class="material-icons" style="margin-right: 10px;">warning</i> SOS CHUTE
-                 </h2>
-              </div>
-
-              <div class="mdl-card__supporting-text" style="padding: 0 25px 20px 25px;">
-                 <p style="color: #d32f2f;">Entrez le numéro à contacter en cas de chute.</p>
-
-                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width: 100%;">
-                    <input class="mdl-textfield__input" type="tel" id="tel-urgence">
-                    <label class="mdl-textfield__label" for="tel-urgence" style="color: #d32f2f;">Numéro d'urgence</label>
-                 </div>
-
-                 <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                     <p id="debug-force" style="font-size:0.8em; color:#ef9a9a;">Force: 0</p>
-                     <p id="status-sos" style="font-weight:bold; color:#c62828;">EN ATTENTE</p>
-                 </div>
-              </div>
-
-              <div class="mdl-card__actions mdl-card--border" style="padding:20px; border-top: 1px solid rgba(211,47,47,0.1);">
-                 <button id="btn-start" class="mdl-button mdl-js-button mdl-button--raised sos-btn">
-                    ACTIVER LA DÉTECTION
-                 </button>
-              </div>
-           </div>
-        </div>
-
-      </div>
-    </main>
-  </div>
+        </main>
+    </div>
 </body>
+
 </html>

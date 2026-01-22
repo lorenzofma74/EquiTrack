@@ -43,7 +43,7 @@ if (BOUTON_AJOUTER_EVENT) {
 }
 
 // Nous devons exposer cette fonction globalement pour le onclick="" dans le HTML généré
-window.supprimerEvent = actionSupprimerEvenement; 
+window.supprimerEvent = actionSupprimerEvenement;
 
 /* --- FONCTIONS DE DÉMARRAGE --- */
 
@@ -54,7 +54,7 @@ function demarrerApplication() {
     chargerProfilCheval();
     genererAffichageHistorique();
     initialiserCalendrier();
-    
+
     // Petit délai pour corriger l'affichage des champs Material Design
     setTimeout(corrigerAffichageMaterialDesign, 100);
 }
@@ -65,12 +65,12 @@ function demarrerApplication() {
 function corrigerAffichageMaterialDesign() {
     console.log("Correction visuelle des champs (MDL)...");
     let inputs = document.querySelectorAll('.mdl-textfield__input');
-    
+
     // Remplacement de forEach par une boucle for classique
     for (let i = 0; i < inputs.length; i++) {
         let el = inputs[i];
         if ((el.value && el.value.length > 0) || el.type === 'date') {
-            el.parentNode.classList.add('is-dirty'); 
+            el.parentNode.classList.add('is-dirty');
         }
     }
 }
@@ -93,8 +93,8 @@ function initialiserCalendrier() {
         },
         height: 400,
         events: tableauEvenementsCalendrier,
-        
-        eventClick: function(info) {
+
+        eventClick: function (info) {
             alert('Détail : ' + info.event.title);
         }
     });
@@ -110,16 +110,16 @@ function formaterDonneesPourCalendrier() {
     for (let i = 0; i < donneesBrutes.length; i++) {
         let ev = donneesBrutes[i];
         let couleur = '#3788d8'; // Bleu par défaut
-        
+
         // Logique de couleur sans switch/case complexe
         if (ev.type === 'vaccin') couleur = '#e91e63';
         if (ev.type === 'marechal') couleur = '#795548';
         if (ev.type === 'osteo') couleur = '#9c27b0';
         if (ev.type === 'concours') couleur = '#ff9800';
-        
+
         evenementsFormates.push({
             id: ev.id,
-            title: ev.type.toUpperCase() + (ev.desc ? ' - ' + ev.desc : ''), 
+            title: ev.type.toUpperCase() + (ev.desc ? ' - ' + ev.desc : ''),
             start: ev.date,
             backgroundColor: couleur,
             borderColor: couleur
@@ -144,7 +144,7 @@ function rafraichirCalendrier() {
 // Fonction synchrone : Sauvegarde les infos dans le LocalStorage
 function gererClicSauvegardeProfil() {
     console.log("Tentative de sauvegarde du profil...");
-    
+
     objetInfoCheval = {
         nom: ENTREE_NOM.value,
         race: ENTREE_RACE.value,
@@ -160,7 +160,7 @@ function gererClicSauvegardeProfil() {
 function chargerProfilCheval() {
     console.log("Chargement du profil depuis le stockage...");
     let donneesTexte = localStorage.getItem(CLE_STOCKAGE_INFO);
-    
+
     if (donneesTexte) {
         objetInfoCheval = JSON.parse(donneesTexte);
         ENTREE_NOM.value = objetInfoCheval.nom;
@@ -198,12 +198,12 @@ function gererClicAjoutEvenement() {
 
     listeEvenements = recupererListeEvenementsDepuisStockage();
     listeEvenements.push(nouvelEvent);
-    
+
     localStorage.setItem(CLE_STOCKAGE_EVENTS, JSON.stringify(listeEvenements));
     console.log("Nouvel événement ajouté :", nouvelEvent);
 
     ENTREE_DESC.value = "";
-    
+
     // Mise à jour de l'interface
     genererAffichageHistorique();
     rafraichirCalendrier();
@@ -223,17 +223,17 @@ function genererAffichageHistorique() {
 
     // Tri par date décroissante (fonction de comparaison nommée pas nécessaire ici car simple)
     // Utilisation de function() classique et pas fléchée
-    listeEvenements.sort(function(a, b) {
+    listeEvenements.sort(function (a, b) {
         return new Date(b.date) - new Date(a.date);
     });
 
-    
+
     for (let i = 0; i < listeEvenements.length; i++) {
         let ev = listeEvenements[i];
         let icone = "event"; // defaut
         let dateFr = new Date(ev.date).toLocaleDateString('fr-FR');
         let htmlElement = "";
-        
+
         // Choix de l'icône
         if (ev.type === "vaccin") icone = "local_hospital";
         else if (ev.type === "marechal") icone = "build";
@@ -241,22 +241,22 @@ function genererAffichageHistorique() {
         else if (ev.type === "cours" || ev.type === "concours") icone = "emoji_events";
 
         // Construction HTML sans template literals complexes pour la clarté
-        htmlElement = 
+        htmlElement =
             '<li class="mdl-list__item mdl-list__item--three-line">' +
-                '<span class="mdl-list__item-primary-content">' +
-                    '<i class="material-icons mdl-list__item-avatar" style="background-color: #3f51b5;">' + icone + '</i>' +
-                    '<span>' + ev.type.toUpperCase() + '</span>' +
-                    '<span class="mdl-list__item-text-body">' + dateFr + ' - ' + ev.desc + '</span>' +
-                '</span>' +
-                '<span class="mdl-list__item-secondary-content">' +
-                    // Appel de la fonction globale exposée
-                    '<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" onclick="window.supprimerEvent(' + ev.id + ')">' +
-                        '<i class="material-icons">delete</i>' +
-                    '</button>' +
-                '</span>' +
+            '<span class="mdl-list__item-primary-content">' +
+            '<i class="material-icons mdl-list__item-avatar" style="background-color: #3f51b5;">' + icone + '</i>' +
+            '<span>' + ev.type.toUpperCase() + '</span>' +
+            '<span class="mdl-list__item-text-body">' + dateFr + ' - ' + ev.desc + '</span>' +
+            '</span>' +
+            '<span class="mdl-list__item-secondary-content">' +
+            // Appel de la fonction globale exposée
+            '<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" onclick="window.supprimerEvent(' + ev.id + ')">' +
+            '<i class="material-icons">delete</i>' +
+            '</button>' +
+            '</span>' +
             '</li>' +
             '<hr style="margin:0">';
-            
+
         LISTE_HISTORIQUE.innerHTML += htmlElement;
     }
 }
@@ -265,20 +265,20 @@ function genererAffichageHistorique() {
 // Cette fonction est appelée via le onclick HTML
 function actionSupprimerEvenement(id) {
     console.log("Demande de suppression ID :", id);
-    
-    if(confirm("Supprimer cet événement ?")) {
+
+    if (confirm("Supprimer cet événement ?")) {
         listeEvenements = recupererListeEvenementsDepuisStockage();
         evenementASupprimer = [];
-        
-        for(let i = 0; i < listeEvenements.length; i++) {
-            if(listeEvenements[i].id !== id) {
+
+        for (let i = 0; i < listeEvenements.length; i++) {
+            if (listeEvenements[i].id !== id) {
                 evenementASupprimer.push(listeEvenements[i]);
             }
         }
-        
+
         localStorage.setItem(CLE_STOCKAGE_EVENTS, JSON.stringify(evenementASupprimer));
         console.log("Événement supprimé. Mise à jour...");
-        
+
         genererAffichageHistorique();
         rafraichirCalendrier();
     }
